@@ -45,16 +45,13 @@ jobs:
       - name: Install Angular deps
         run: cd frontend && npm ci --legacy-peer-deps
 
-      - name: Build Angular (production)
-        run: cd frontend && npx ng build --configuration production
-
-      - name: Serve Angular static build
+      - name: Start Angular dev server (with API proxy)
         run: |
-          # Use a simple HTTP server to serve the built Angular app
-          npx --yes serve frontend/dist/frontend/browser -l 4200 --no-clipboard &
-          for i in $(seq 1 30); do
+          cd frontend
+          npx ng serve --proxy-config proxy.conf.json --host 0.0.0.0 --port 4200 &
+          for i in $(seq 1 60); do
             curl -s http://localhost:4200/ && break
-            sleep 1
+            sleep 2
           done
 
       # ─── Playwright E2E tests ────────────────────────────────────
