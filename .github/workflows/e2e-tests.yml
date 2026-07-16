@@ -104,7 +104,7 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-      # ─── Deploy to GitHub Pages (hosted, traces work!) ─────────
+      # ─── Deploy to GitHub Pages (hosted report, traces work!) ──
       - name: Setup Pages
         if: always()
         uses: actions/configure-pages@v5
