@@ -28,11 +28,10 @@ A minimal project demonstrating **Playwright trace artifacts** being uploaded to
 ## What happens in CI
 
 1. FastAPI backend starts on port 8000
-2. Angular app is built and served on port 4200
+2. Angular dev server starts on port 4200 (with API proxy to backend)
 3. Playwright runs all 6 tests (3 pass, 3 fail)
-4. **Even though tests fail**, the workflow uploads:
-   - `playwright-traces-*` — traces, screenshots, videos from `test-results/`
-   - `playwright-report-*` — HTML report (if generated)
+4. **Even though tests fail**, the workflow uploads the HTML report as an artifact:
+   - `playwright-report-*` — full HTML report with traces, screenshots, videos
 
 ## Run locally
 
@@ -54,13 +53,12 @@ npx playwright install chromium --with-deps
 npx playwright test --trace on
 ```
 
-## Trace artifacts
+## Viewing the HTML report locally
 
-After a run, traces are stored in `e2e/test-results/`.  
-Open them with:
+Download the `playwright-report-*` artifact from the GitHub Actions run summary, extract the zip, then serve it with Playwright's built-in server (required — the trace viewer won't work over `file://`):
 
 ```bash
-npx playwright show-trace e2e/test-results/<path>/trace.zip
+npx playwright show-report ~/Downloads/playwright-report-29479285603-1
 ```
 
-In the GitHub Actions pipeline, download the `playwright-traces-*` artifact from the run summary and inspect failed test traces locally.
+This opens the report in your browser at `http://localhost:9323` — traces, screenshots, and videos all work.
