@@ -30,8 +30,9 @@ A minimal project demonstrating **Playwright trace artifacts** being uploaded to
 1. FastAPI backend starts on port 8000
 2. Angular dev server starts on port 4200 (with API proxy to backend)
 3. Playwright runs all 6 tests (3 pass, 3 fail)
-4. **Even though tests fail**, the workflow uploads the HTML report as an artifact:
-   - `playwright-report-*` — full HTML report with traces, screenshots, videos
+4. **Even though tests fail**, the workflow:
+   - Deploys the HTML report to **GitHub Pages** (traces ✅, screenshots ✅, videos ❌ — see below)
+   - Uploads `playwright-report-*` as a downloadable artifact (everything works locally)
 
 ## Run locally
 
@@ -53,12 +54,20 @@ npx playwright install chromium --with-deps
 npx playwright test --trace on
 ```
 
-## Viewing the HTML report locally
+## Viewing reports
 
-Download the `playwright-report-*` artifact from the GitHub Actions run summary, extract the zip, then serve it with Playwright's built-in server (required — the trace viewer won't work over `file://`):
+### GitHub Pages (quick preview)
+After each push, the report is deployed to:
+```
+https://angar4ik.github.io/fastapi-angular-playwright/
+```
+Traces and screenshots work. **Videos don't play** — GitHub Pages serves `.webm` files with the wrong MIME type (a known limitation).
+
+### Local (everything works)
+Download the `playwright-report-*` artifact from the run summary, extract, then serve locally:
 
 ```bash
-npx playwright show-report ~/Downloads/playwright-report-29479285603-1
+npx playwright show-report ~/Downloads/playwright-report-12345678-1
 ```
 
-This opens the report in your browser at `http://localhost:9323` — traces, screenshots, and videos all work.
+This opens at `http://localhost:9323` — traces, screenshots, **and videos** all work.
