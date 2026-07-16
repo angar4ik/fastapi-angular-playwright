@@ -7,10 +7,24 @@ on:
     branches: [main, master]
   workflow_dispatch:   # allow manual trigger
 
+# Allow GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -80,8 +94,8 @@ jobs:
             grep -E 'passed|failed|flaky|skipped|Error' playwright-output.txt || true
           fi
 
-      # ─── Upload HTML report (traces, videos, screenshots) ───────
-      - name: Upload Playwright HTML report
+      # ─── Upload artifact (downloadable zip) ──────────────────────
+      - name: Upload Playwright HTML report (artifact)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -89,3 +103,19 @@ jobs:
           path: e2e/playwright-report/
           retention-days: 14
           if-no-files-found: warn
+
+      # ─── Deploy to GitHub Pages (hosted, traces work!) ─────────
+      - name: Setup Pages
+        if: always()
+        uses: actions/configure-pages@v5
+
+      - name: Upload to Pages
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: e2e/playwright-report/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: always()
+        uses: actions/deploy-pages@v4
