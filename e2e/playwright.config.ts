@@ -16,6 +16,8 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
+  reporter: [['html', { outputFolder: 'playwright-report' }]],
+
   // Output dir for test results (traces, screenshots, videos, report)
   outputDir: './test-results/',
 
